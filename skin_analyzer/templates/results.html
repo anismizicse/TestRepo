@@ -1,0 +1,230 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <!-- Image Display -->
+    <div class="col-lg-6 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-image"></i> Analyzed Image</h5>
+            </div>
+            <div class="card-body text-center">
+                {% if data.image_base64 %}
+                <img src="data:image/jpeg;base64,{{ data.image_base64 }}" 
+                     class="img-fluid rounded" style="max-height: 400px;" alt="Analyzed Image">
+                {% endif %}
+                <p class="mt-2 text-muted">{{ data.filename }}</p>
+                <p class="small text-muted">Analyzed: {{ data.timestamp }}</p>
+                {% if data.is_demo %}
+                <span class="badge bg-info">Demo Image</span>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Analysis Results -->
+    <div class="col-lg-6 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-chart-bar"></i> Analysis Results</h5>
+            </div>
+            <div class="card-body">
+                {% if data.result.error %}
+                    <div class="alert alert-danger">
+                        <i class="fas fa-exclamation-triangle"></i> 
+                        {{ data.result.error }}
+                    </div>
+                {% else %}
+                    <!-- Primary Prediction -->
+                    <div class="mb-4">
+                        <h6><i class="fas fa-target"></i> Primary Skin Type</h6>
+                        <div class="d-flex align-items-center mb-2">
+                            <span class="skin-type-badge bg-primary text-white me-3">
+                                {{ data.result.skin_type.upper() }}
+                            </span>
+                            <span class="text-muted">
+                                {{ "%.1f"|format(data.result.confidence * 100) }}% confidence
+                            </span>
+                        </div>
+                        
+                        <!-- Face Detection Status -->
+                        <div class="mb-2">
+                            {% if data.result.face_detected %}
+                                <span class="badge bg-success">
+                                    <i class="fas fa-check"></i> Face Detected
+                                </span>
+                            {% else %}
+                                <span class="badge bg-warning">
+                                    <i class="fas fa-question"></i> Face Not Detected
+                                </span>
+                            {% endif %}
+                        </div>
+
+                        <!-- Model Used -->
+                        <small class="text-muted">
+                            <i class="fas fa-cog"></i> 
+                            Model: {{ data.model_type.replace('_', ' ').title() }}
+                        </small>
+                    </div>
+
+                    <!-- Confidence Interpretation -->
+                    <div class="analysis-card mb-4">
+                        <h6><i class="fas fa-lightbulb"></i> Confidence Interpretation</h6>
+                        {% set confidence = data.result.confidence %}
+                        {% if confidence >= 0.6 %}
+                            <div class="alert alert-success mb-2">
+                                <strong>Clear Characteristics:</strong> The analysis shows relatively distinct skin type features.
+                            </div>
+                        {% elif confidence >= 0.3 %}
+                            <div class="alert alert-warning mb-2">
+                                <strong>Mixed Characteristics:</strong> Your skin shows characteristics of multiple types (combination skin).
+                            </div>
+                        {% else %}
+                            <div class="alert alert-info mb-2">
+                                <strong>Complex Skin:</strong> Multiple skin types detected - this is normal and indicates nuanced skin needs.
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if not data.result.error %}
+<!-- Probability Breakdown -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-chart-pie"></i> Skin Type Breakdown</h5>
+            </div>
+            <div class="card-body">
+                {% for skin_type, probability in data.result.probabilities.items() %}
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <span class="fw-bold">{{ skin_type.capitalize() }}</span>
+                        <span class="badge bg-secondary">{{ "%.1f"|format(probability * 100) }}%</span>
+                    </div>
+                    <div class="progress">
+                        <div class="progress-bar confidence-bar" 
+                             style="width: {{ probability * 100 }}%; background: linear-gradient(45deg, #667eea, #764ba2);">
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Detailed Analysis (if available) -->
+{% if data.detailed_analysis and data.result.detailed_analysis %}
+<div class="row mb-4">
+    <!-- Characteristics -->
+    <div class="col-md-4 mb-3">
+        <div class="card h-100">
+            <div class="card-header bg-info text-white">
+                <h6 class="mb-0"><i class="fas fa-list"></i> Characteristics</h6>
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled">
+                    {% for characteristic in data.result.detailed_analysis.characteristics %}
+                    <li class="mb-2">
+                        <i class="fas fa-dot-circle text-info"></i> {{ characteristic }}
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Care Tips -->
+    <div class="col-md-4 mb-3">
+        <div class="card h-100">
+            <div class="card-header bg-success text-white">
+                <h6 class="mb-0"><i class="fas fa-heart"></i> Care Tips</h6>
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled">
+                    {% for tip in data.result.detailed_analysis.care_tips %}
+                    <li class="mb-2">
+                        <i class="fas fa-check text-success"></i> {{ tip }}
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Concerns -->
+    <div class="col-md-4 mb-3">
+        <div class="card h-100">
+            <div class="card-header bg-warning text-dark">
+                <h6 class="mb-0"><i class="fas fa-exclamation-triangle"></i> Main Concerns</h6>
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled">
+                    {% for concern in data.result.detailed_analysis.concerns %}
+                    <li class="mb-2">
+                        <i class="fas fa-exclamation-circle text-warning"></i> {{ concern }}
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Additional Notes -->
+{% if data.result.detailed_analysis.secondary_characteristics %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h6><i class="fas fa-sticky-note"></i> Additional Notes</h6>
+            </div>
+            <div class="card-body">
+                {% for note in data.result.detailed_analysis.secondary_characteristics %}
+                <div class="alert alert-light">
+                    <i class="fas fa-info-circle"></i> {{ note }}
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endif %}
+{% endif %}
+
+<!-- Action Buttons -->
+<div class="row">
+    <div class="col-12 text-center">
+        <a href="{{ url_for('index') }}" class="btn btn-primary me-2">
+            <i class="fas fa-upload"></i> Analyze Another Image
+        </a>
+        <a href="{{ url_for('demo') }}" class="btn btn-outline-secondary me-2">
+            <i class="fas fa-images"></i> Try Demo Images
+        </a>
+        {% if not data.result.error %}
+        <button class="btn btn-outline-info" onclick="downloadResults()">
+            <i class="fas fa-download"></i> Download Results
+        </button>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+function downloadResults() {
+    const results = {{ data.result | tojson }};
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(results, null, 2));
+    const downloadAnchorNode = document.createElement('a');
+    downloadAnchorNode.setAttribute("href", dataStr);
+    downloadAnchorNode.setAttribute("download", "skin_analysis_results.json");
+    document.body.appendChild(downloadAnchorNode);
+    downloadAnchorNode.click();
+    downloadAnchorNode.remove();
+}
+</script>
+{% endblock %}

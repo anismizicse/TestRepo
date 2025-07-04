@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="text-center mb-5">
+    <h1 class="display-5 mb-3">
+        <i class="fas fa-images feature-icon"></i><br>
+        Demo Gallery
+    </h1>
+    <p class="lead">Try the skin analyzer with sample images</p>
+</div>
+
+{% if sample_images %}
+<div class="row">
+    {% for image in sample_images %}
+    <div class="col-lg-4 col-md-6 mb-4">
+        <div class="card">
+            <img src="data:image/jpeg;base64,{{ image.base64 }}" 
+                 class="card-img-top" style="height: 250px; object-fit: cover;" 
+                 alt="{{ image.filename }}">
+            <div class="card-body text-center">
+                <h6 class="card-title">{{ image.filename }}</h6>
+                <a href="{{ url_for('demo_analyze', image_path=image.path) }}" 
+                   class="btn btn-primary">
+                    <i class="fas fa-search"></i> Analyze This Image
+                </a>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="text-center">
+    <div class="alert alert-info">
+        <i class="fas fa-info-circle"></i> 
+        No sample images found. Please add some images to the sample_faces directory.
+    </div>
+    <a href="{{ url_for('index') }}" class="btn btn-primary">
+        <i class="fas fa-upload"></i> Upload Your Own Image
+    </a>
+</div>
+{% endif %}
+
+<div class="text-center mt-5">
+    <h4>How it works</h4>
+    <div class="row mt-4">
+        <div class="col-md-3 mb-3">
+            <div class="text-center">
+                <i class="fas fa-upload" style="font-size: 2rem; color: #667eea;"></i>
+                <h6 class="mt-2">1. Upload</h6>
+                <p class="small text-muted">Choose an image</p>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="text-center">
+                <i class="fas fa-eye" style="font-size: 2rem; color: #667eea;"></i>
+                <h6 class="mt-2">2. Detect</h6>
+                <p class="small text-muted">Find face in image</p>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="text-center">
+                <i class="fas fa-brain" style="font-size: 2rem; color: #667eea;"></i>
+                <h6 class="mt-2">3. Analyze</h6>
+                <p class="small text-muted">AI processes features</p>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="text-center">
+                <i class="fas fa-chart-bar" style="font-size: 2rem; color: #667eea;"></i>
+                <h6 class="mt-2">4. Results</h6>
+                <p class="small text-muted">Get skin type & tips</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

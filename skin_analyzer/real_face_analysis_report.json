@@ -1,0 +1,36 @@
+{
+  "skin_type": "oily",
+  "confidence": 0.32,
+  "probabilities": {
+    "combination": 0.07,
+    "dry": 0.27,
+    "normal": 0.1,
+    "oily": 0.32,
+    "sensitive": 0.24
+  },
+  "image_path": "sample_faces/real_face_sample_1.jpg",
+  "face_detected": true,
+  "confidence_level": "Low",
+  "detailed_analysis": {
+    "characteristics": [
+      "Excess sebum",
+      "Shine",
+      "Large pores",
+      "Acne-prone"
+    ],
+    "care_tips": [
+      "Oil-free cleanser",
+      "Lightweight moisturizer",
+      "Salicylic acid",
+      "Clay masks"
+    ],
+    "concerns": [
+      "Acne breakouts",
+      "Clogged pores",
+      "Excessive shine"
+    ],
+    "secondary_characteristics": [
+      "Shows some dry skin characteristics (27.0%)"
+    ]
+  }
+}

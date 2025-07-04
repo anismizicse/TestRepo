@@ -1,0 +1,262 @@
+[
+  {
+    "filename": "combination_sample.jpg",
+    "true_type": "combination",
+    "predicted_type": "oily",
+    "confidence": 0.27107661168608327,
+    "correct": false,
+    "full_result": {
+      "skin_type": "oily",
+      "confidence": 0.27107661168608327,
+      "probabilities": {
+        "normal": 0.14311468147254078,
+        "dry": 0.24226886129206518,
+        "oily": 0.27107661168608327,
+        "combination": 0.11211344269764674,
+        "sensitive": 0.23142640285166396
+      },
+      "face_detected": true,
+      "features": {
+        "mean_rgb": "[189.03481744 155.84478635 121.45444037]",
+        "std_rgb": "[56.67459474 43.49642971 29.53181718]",
+        "mean_hsv": "[ 17.79872848  82.59462691 189.10251913]",
+        "mean_lab": "[168.3365354  135.00962612 150.00199298]",
+        "brightness": 161.86421795280611,
+        "texture_variance": 2098.3958449639763
+      },
+      "detailed_analysis": {
+        "description": "Excess sebum production, shine",
+        "characteristics": [
+          "Enlarged pores",
+          "Shine",
+          "Acne-prone"
+        ],
+        "care_tips": [
+          "Oil-free cleanser",
+          "Lightweight moisturizer",
+          "Salicylic acid"
+        ],
+        "color_range": [
+          [
+            210,
+            170,
+            130
+          ],
+          [
+            250,
+            210,
+            170
+          ]
+        ]
+      }
+    }
+  },
+  {
+    "filename": "dry_sample.jpg",
+    "true_type": "dry",
+    "predicted_type": "normal",
+    "confidence": 0.2885435138205679,
+    "correct": false,
+    "full_result": {
+      "skin_type": "normal",
+      "confidence": 0.2885435138205679,
+      "probabilities": {
+        "normal": 0.2885435138205679,
+        "dry": 0.23840722497457797,
+        "oily": 0.11253379428783908,
+        "combination": 0.11917442029642646,
+        "sensitive": 0.2413410466205886
+      },
+      "face_detected": true,
+      "features": {
+        "mean_rgb": "[163.82597258 132.0931521  100.74441964]",
+        "std_rgb": "[40.93198144 30.23601643 19.95511068]",
+        "mean_hsv": "[ 17.24876435  91.66193001 163.8824139 ]",
+        "mean_lab": "[145.70210858 135.71958705 149.22765864]",
+        "brightness": 138.21374760841837,
+        "texture_variance": 1038.2375748744362
+      },
+      "detailed_analysis": {
+        "description": "Balanced oil production, good hydration",
+        "characteristics": [
+          "Even texture",
+          "Minimal pores",
+          "Good elasticity"
+        ],
+        "care_tips": [
+          "Use gentle cleanser",
+          "Moisturize daily",
+          "Apply sunscreen"
+        ],
+        "color_range": [
+          [
+            200,
+            160,
+            120
+          ],
+          [
+            240,
+            200,
+            160
+          ]
+        ]
+      }
+    }
+  },
+  {
+    "filename": "sensitive_sample.jpg",
+    "true_type": "sensitive",
+    "predicted_type": "oily",
+    "confidence": 0.2881567549562622,
+    "correct": false,
+    "full_result": {
+      "skin_type": "oily",
+      "confidence": 0.2881567549562622,
+      "probabilities": {
+        "normal": 0.13214072402688753,
+        "dry": 0.23264405077119324,
+        "oily": 0.2881567549562622,
+        "combination": 0.11980288994581727,
+        "sensitive": 0.2272555802998398
+      },
+      "face_detected": true,
+      "features": {
+        "mean_rgb": "[158.56285874 155.1274713  124.81959503]",
+        "std_rgb": "[62.49657289 55.84923715 40.97844846]",
+        "mean_hsv": "[ 32.22598453  55.44595026 165.59040179]",
+        "mean_lab": "[160.38847258 124.37904576 144.09209582]",
+        "brightness": 152.7032844387755,
+        "texture_variance": 3048.846151521135
+      },
+      "detailed_analysis": {
+        "description": "Excess sebum production, shine",
+        "characteristics": [
+          "Enlarged pores",
+          "Shine",
+          "Acne-prone"
+        ],
+        "care_tips": [
+          "Oil-free cleanser",
+          "Lightweight moisturizer",
+          "Salicylic acid"
+        ],
+        "color_range": [
+          [
+            210,
+            170,
+            130
+          ],
+          [
+            250,
+            210,
+            170
+          ]
+        ]
+      }
+    }
+  },
+  {
+    "filename": "oily_sample.jpg",
+    "true_type": "oily",
+    "predicted_type": "oily",
+    "confidence": 0.3064841313990738,
+    "correct": true,
+    "full_result": {
+      "skin_type": "oily",
+      "confidence": 0.3064841313990738,
+      "probabilities": {
+        "normal": 0.1442870122734518,
+        "dry": 0.2646760787115962,
+        "oily": 0.3064841313990738,
+        "combination": 0.14942407148749806,
+        "sensitive": 0.1351287061283801
+      },
+      "face_detected": true,
+      "features": {
+        "mean_rgb": "[142.05532526 171.09837372 138.23202328]",
+        "std_rgb": "[52.59434558 57.14430042 42.34219295]",
+        "mean_hsv": "[ 51.28206712  59.61838329 173.47140067]",
+        "mean_lab": "[169.84996811 112.61611129 141.69686703]",
+        "brightness": 158.67332987882654,
+        "texture_variance": 2684.7944545209625
+      },
+      "detailed_analysis": {
+        "description": "Excess sebum production, shine",
+        "characteristics": [
+          "Enlarged pores",
+          "Shine",
+          "Acne-prone"
+        ],
+        "care_tips": [
+          "Oil-free cleanser",
+          "Lightweight moisturizer",
+          "Salicylic acid"
+        ],
+        "color_range": [
+          [
+            210,
+            170,
+            130
+          ],
+          [
+            250,
+            210,
+            170
+          ]
+        ]
+      }
+    }
+  },
+  {
+    "filename": "normal_sample.jpg",
+    "true_type": "normal",
+    "predicted_type": "oily",
+    "confidence": 0.27558275384241754,
+    "correct": false,
+    "full_result": {
+      "skin_type": "oily",
+      "confidence": 0.27558275384241754,
+      "probabilities": {
+        "normal": 0.1310075945395532,
+        "dry": 0.22786800553898154,
+        "oily": 0.27558275384241754,
+        "combination": 0.13325164616169605,
+        "sensitive": 0.23228999991735172
+      },
+      "face_detected": true,
+      "features": {
+        "mean_rgb": "[194.60243941 161.10644531 126.39879624]",
+        "std_rgb": "[57.077584   44.21413076 30.53588727]",
+        "mean_hsv": "[ 17.73977599  81.49904337 194.66878587]",
+        "mean_lab": "[172.96109694 135.05970982 150.17653858]",
+        "brightness": 167.18110251913265,
+        "texture_variance": 2159.024659626288
+      },
+      "detailed_analysis": {
+        "description": "Excess sebum production, shine",
+        "characteristics": [
+          "Enlarged pores",
+          "Shine",
+          "Acne-prone"
+        ],
+        "care_tips": [
+          "Oil-free cleanser",
+          "Lightweight moisturizer",
+          "Salicylic acid"
+        ],
+        "color_range": [
+          [
+            210,
+            170,
+            130
+          ],
+          [
+            250,
+            210,
+            170
+          ]
+        ]
+      }
+    }
+  }
+]

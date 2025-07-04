@@ -1,0 +1,17 @@
+{
+  "skin_types": [
+    "normal",
+    "dry",
+    "oily",
+    "combination",
+    "sensitive"
+  ],
+  "samples_per_type": 50,
+  "image_size": [
+    224,
+    224,
+    3
+  ],
+  "train_split": 0.8,
+  "test_split": 0.2
+}
