@@ -9,7 +9,7 @@ echo "🚀 Google Cloud Skin Analyzer Deployment Script"
 echo "================================================"
 
 # Configuration
-PROJECT_ID="your-project-id"  # Replace with your actual project ID
+PROJECT_ID="chatapplication-983c8"  # Your Google Cloud project ID
 SERVICE_NAME="skin-analyzer-api"
 REGION="us-central1"  # Free tier region
 IMAGE_NAME="gcr.io/$PROJECT_ID/$SERVICE_NAME"

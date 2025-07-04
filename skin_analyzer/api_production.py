@@ -354,14 +354,19 @@ def internal_error(error):
     }), 500
 
 # Initialize models when the app starts
-if __name__ == '__main__':
-    logger.info("🚀 Starting Skin Analyzer API...")
+def init_models():
+    """Initialize models on app startup."""
+    global model, scaler, label_encoder
+    logger.info("🚀 Initializing Skin Analyzer API...")
     
     # Load models
     if load_models():
         logger.info("✅ Models loaded successfully")
     else:
         logger.error("❌ Failed to load models")
+
+if __name__ == '__main__':
+    init_models()
     
     # Get port from environment variable (for Google Cloud Run)
     port = int(os.environ.get('PORT', 8080))
@@ -369,5 +374,5 @@ if __name__ == '__main__':
     # Run the app
     app.run(host='0.0.0.0', port=port, debug=False)
 else:
-    # For production WSGI servers
-    load_models()
+    # For production WSGI servers (like gunicorn)
+    init_models()
