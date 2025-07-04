@@ -1,0 +1,41 @@
+{
+  "timestamp": "2025-07-04T23:41:56.960141",
+  "model_results": {
+    "Random Forest": {
+      "train_score": 0.7881578947368421,
+      "test_score": 0.5789473684210527,
+      "cv_mean": 0.6210526315789473,
+      "cv_std": 0.013966388884290054
+    },
+    "Gradient Boosting": {
+      "train_score": 0.7881578947368421,
+      "test_score": 0.5789473684210527,
+      "cv_mean": 0.618421052631579,
+      "cv_std": 0.01840015523105531
+    },
+    "SVM": {
+      "train_score": 0.7600877192982456,
+      "test_score": 0.6508771929824562,
+      "cv_mean": 0.6407894736842106,
+      "cv_std": 0.013404128763101868
+    },
+    "Ensemble": {
+      "train_score": 0.7872807017543859,
+      "test_score": 0.6157894736842106,
+      "cv_mean": 0.6421052631578947,
+      "cv_std": 0.01463887655112158
+    }
+  },
+  "best_model": "SVM",
+  "best_accuracy": 0.6508771929824562,
+  "feature_count": 79,
+  "total_samples": 2850,
+  "augmentation_used": true,
+  "classes": [
+    "combination",
+    "dry",
+    "normal",
+    "oily",
+    "sensitive"
+  ]
+}
