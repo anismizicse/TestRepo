@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Skin Analyzer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .loader {
+            border-top-color: #3498db;
+            -webkit-animation: spin 1s linear infinite;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+    <div class="container mx-auto p-4 sm:p-6 md:p-8 max-w-3xl">
+        <header class="text-center mb-8">
+            <h1 class="text-3xl sm:text-4xl font-bold text-gray-900">AI Skin Analyzer</h1>
+            <p class="text-md text-gray-600 mt-2">Upload a photo or use your camera to get an AI-powered skin analysis.</p>
+            <p class="text-xs text-red-500 mt-2">Disclaimer: This is a demonstration and not a medical diagnosis. Consult a dermatologist for any health concerns.</p>
+        </header>
+
+        <main class="bg-white p-6 rounded-2xl shadow-lg w-full">
+            <!-- Input Section -->
+            <div id="input-section">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- File Upload -->
+                    <div class="flex flex-col items-center justify-center p-6 border-2 border-dashed border-gray-300 rounded-lg">
+                        <svg class="w-10 h-10 mb-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-4-4V6a4 4 0 014-4h10a4 4 0 014 4v6a4 4 0 01-4 4H7z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                        <label for="file-upload" class="cursor-pointer bg-blue-500 text-white px-4 py-2 rounded-md font-semibold hover:bg-blue-600 transition-colors">
+                            Upload a Photo
+                        </label>
+                        <input id="file-upload" type="file" class="hidden" accept="image/*">
+                        <p id="file-name" class="mt-2 text-sm text-gray-500">No file chosen</p>
+                    </div>
+
+                    <!-- Camera Option -->
+                    <div class="flex flex-col items-center justify-center p-6 border-2 border-dashed border-gray-300 rounded-lg">
+                         <svg class="w-10 h-10 mb-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                        <button id="start-camera" class="bg-green-500 text-white px-4 py-2 rounded-md font-semibold hover:bg-green-600 transition-colors">
+                            Use Camera
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Camera Modal -->
+            <div id="camera-modal" class="hidden fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
+                <div class="bg-white rounded-lg p-4 w-full max-w-lg text-center">
+                    <h3 class="text-xl font-semibold mb-4">Live Camera</h3>
+                    <video id="video" class="w-full rounded-md" autoplay playsinline></video>
+                    <canvas id="canvas" class="hidden"></canvas>
+                    <div class="mt-4 flex justify-center gap-4">
+                        <button id="capture-photo" class="bg-blue-500 text-white px-6 py-2 rounded-md font-semibold hover:bg-blue-600 transition-colors">Capture</button>
+                        <button id="close-camera" class="bg-red-500 text-white px-6 py-2 rounded-md font-semibold hover:bg-red-600 transition-colors">Close</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Image Preview -->
+            <div id="image-preview-container" class="hidden mt-6 text-center">
+                <h3 class="text-xl font-semibold mb-4">Your Image</h3>
+                <img id="image-preview" class="max-w-xs mx-auto rounded-lg shadow-md" src="" alt="Your selected image">
+                <button id="analyze-button" class="mt-6 bg-indigo-600 text-white px-8 py-3 rounded-md font-bold text-lg hover:bg-indigo-700 transition-transform transform hover:scale-105">
+                    Analyze Skin
+                </button>
+            </div>
+
+            <!-- Results Section -->
+            <div id="results-section" class="hidden mt-8">
+                <div id="loader-container" class="flex flex-col items-center justify-center">
+                    <div class="loader ease-linear rounded-full border-8 border-t-8 border-gray-200 h-24 w-24 mb-4"></div>
+                    <p class="text-lg text-gray-600">AI is analyzing your skin... Please wait.</p>
+                </div>
+                <div id="analysis-output" class="hidden">
+                    <h2 class="text-2xl sm:text-3xl font-bold text-center mb-6">Analysis Results</h2>
+                    <div class="bg-gray-100 p-6 rounded-lg">
+                        <h3 class="text-xl font-semibold text-gray-800">AI Analysis Results</h3>
+                        <pre id="result-summary" class="mt-2 text-gray-700 whitespace-pre-wrap font-sans"></pre>
+                    </div>
+                    <div class="mt-6">
+                        <button id="start-over" class="w-full bg-gray-500 text-white px-6 py-2 rounded-md font-semibold hover:bg-gray-600 transition-colors">Start Over</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const inputSection = document.getElementById('input-section');
+        const fileUpload = document.getElementById('file-upload');
+        const fileNameEl = document.getElementById('file-name');
+        const startCameraBtn = document.getElementById('start-camera');
+        const cameraModal = document.getElementById('camera-modal');
+        const closeCameraBtn = document.getElementById('close-camera');
+        const video = document.getElementById('video');
+        const canvas = document.getElementById('canvas');
+        const capturePhotoBtn = document.getElementById('capture-photo');
+        const imagePreviewContainer = document.getElementById('image-preview-container');
+        const imagePreview = document.getElementById('image-preview');
+        const analyzeButton = document.getElementById('analyze-button');
+        const resultsSection = document.getElementById('results-section');
+        const loaderContainer = document.getElementById('loader-container');
+        const analysisOutput = document.getElementById('analysis-output');
+        const resultSummary = document.getElementById('result-summary');
+        const startOverBtn = document.getElementById('start-over');
+
+        let imageBase64Data = null;
+        let stream = null;
+
+        // Handle file upload
+        fileUpload.addEventListener('change', (event) => {
+            const file = event.target.files[0];
+            if (file) {
+                fileNameEl.textContent = file.name;
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    imageBase64Data = e.target.result.split(',')[1];
+                    imagePreview.src = e.target.result;
+                    showImagePreview();
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Handle camera logic
+        startCameraBtn.addEventListener('click', async () => {
+            cameraModal.classList.remove('hidden');
+            try {
+                stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
+                video.srcObject = stream;
+            } catch (err) {
+                console.error("Error accessing camera: ", err);
+                alert("Could not access the camera. Please check permissions.");
+                cameraModal.classList.add('hidden');
+            }
+        });
+
+        closeCameraBtn.addEventListener('click', () => {
+            stopCamera();
+        });
+
+        function stopCamera() {
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+            }
+            cameraModal.classList.add('hidden');
+        }
+
+        capturePhotoBtn.addEventListener('click', () => {
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            const context = canvas.getContext('2d');
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+            const dataUrl = canvas.toDataURL('image/png');
+            imageBase64Data = dataUrl.split(',')[1];
+            imagePreview.src = dataUrl;
+            showImagePreview();
+            stopCamera();
+        });
+
+        function showImagePreview() {
+            inputSection.classList.add('hidden');
+            imagePreviewContainer.classList.remove('hidden');
+            resultsSection.classList.add('hidden');
+            analysisOutput.classList.add('hidden');
+        }
+
+        // Handle analysis
+        analyzeButton.addEventListener('click', async () => {
+            if (!imageBase64Data) {
+                alert("Please select an image first.");
+                return;
+            }
+            imagePreviewContainer.classList.add('hidden');
+            resultsSection.classList.remove('hidden');
+            loaderContainer.classList.remove('hidden');
+            analysisOutput.classList.add('hidden');
+
+            try {
+                // Use our ensemble ML model API
+                const payload = {
+                    image: `data:image/png;base64,${imageBase64Data}`
+                };
+
+                // Get the current hostname/origin for the API call
+                const apiUrl = `${window.location.origin}/analyze-base64`;
+
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    throw new Error(`API request failed with status ${response.status}`);
+                }
+
+                const result = await response.json();
+                
+                let analysisText = "Could not retrieve analysis. Please try again.";
+                
+                if (result.status === 'success') {
+                    const skinType = result.predicted_skin_type;
+                    const confidence = (result.confidence * 100).toFixed(1);
+                    
+                    // Create detailed analysis text
+                    analysisText = `🔬 **AI Analysis Complete**\n\n`;
+                    analysisText += `**Predicted Skin Type:** ${skinType}\n`;
+                    analysisText += `**Confidence Level:** ${confidence}%\n\n`;
+                    
+                    // Add skin type specific recommendations
+                    const recommendations = getSkinTypeRecommendations(skinType);
+                    analysisText += `**Recommended Skincare Routine:**\n${recommendations}\n\n`;
+                    
+                    // Add detailed confidence scores if available
+                    if (result.confidence_scores) {
+                        analysisText += `**Detailed Analysis:**\n`;
+                        Object.entries(result.confidence_scores).forEach(([type, score]) => {
+                            const percentage = (score * 100).toFixed(1);
+                            analysisText += `• ${type}: ${percentage}%\n`;
+                        });
+                    }
+                } else {
+                    analysisText = `Error: ${result.error || 'Analysis failed. Please try again.'}`;
+                }
+                
+                resultSummary.innerText = analysisText;
+
+            } catch (error) {
+                console.error("Error during analysis: ", error);
+                resultSummary.innerText = "An error occurred during the analysis. Please check your connection and try again.";
+            } finally {
+                loaderContainer.classList.add('hidden');
+                analysisOutput.classList.remove('hidden');
+            }
+        });
+
+        // Skin type recommendations
+        function getSkinTypeRecommendations(skinType) {
+            const recommendations = {
+                'Oily': '• Use gel-based cleansers twice daily\n• Apply oil-free moisturizers\n• Use salicylic acid or niacinamide serums\n• Don\'t skip moisturizer - dehydrated skin produces more oil',
+                'Dry': '• Use cream-based gentle cleansers\n• Apply rich moisturizers with ceramides or hyaluronic acid\n• Avoid alcohol-based products\n• Consider overnight hydrating masks',
+                'Combination': '• Use gentle cleansers suitable for mixed skin\n• Apply lighter moisturizers to T-zone, richer to dry areas\n• Use targeted treatments for different face zones\n• Balance is key - avoid over-treating',
+                'Normal': '• Maintain with gentle cleansers and balanced moisturizers\n• Use broad-spectrum SPF daily\n• Add antioxidant serums for protection\n• Keep routine simple and consistent',
+                'Sensitive': '• Use fragrance-free, hypoallergenic products\n• Patch test new products before full use\n• Avoid harsh scrubs and strong actives\n• Focus on gentle, soothing ingredients like aloe vera'
+            };
+            
+            return recommendations[skinType] || '• Consult with a dermatologist for personalized skincare advice\n• Use gentle, fragrance-free products\n• Always wear SPF during the day';
+        }
+
+        // Handle start over
+        startOverBtn.addEventListener('click', () => {
+            inputSection.classList.remove('hidden');
+            resultsSection.classList.add('hidden');
+            imagePreviewContainer.classList.add('hidden');
+            fileUpload.value = '';
+            fileNameEl.textContent = 'No file chosen';
+            imageBase64Data = null;
+            imagePreview.src = '';
+        });
+
+    </script>
+</body>
+</html>

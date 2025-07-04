@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <!-- Hero Section -->
+        <div class="text-center mb-5">
+            <h1 class="display-4 mb-3">
+                <i class="fas fa-user-md feature-icon"></i><br>
+                AI Skin Type Analyzer
+            </h1>
+            <p class="lead">Upload your photo and get instant, detailed skin type analysis using advanced machine learning</p>
+        </div>
+
+        <!-- Upload Form -->
+        <div class="card">
+            <div class="card-body p-4">
+                <h3 class="card-title text-center mb-4">
+                    <i class="fas fa-upload"></i> Upload Your Photo
+                </h3>
+                
+                <form action="{{ url_for('analyze_skin') }}" method="post" enctype="multipart/form-data">
+                    <div class="mb-4">
+                        <label for="image" class="form-label">Choose Your Photo</label>
+                        <input type="file" class="form-control form-control-lg" id="image" name="image" 
+                               accept=".png,.jpg,.jpeg,.gif,.bmp" required>
+                        <div class="form-text">
+                            <i class="fas fa-info-circle"></i> 
+                            Supported formats: PNG, JPG, JPEG, GIF, BMP (Max: 16MB)
+                        </div>
+                    </div>
+
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="fas fa-search"></i> Analyze My Skin Type
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Features Section -->
+        <div class="row mt-5">
+            <div class="col-md-4 text-center mb-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <i class="fas fa-camera feature-icon"></i>
+                        <h5>Simple Upload</h5>
+                        <p>Just upload your photo - our AI handles all the complex analysis automatically</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 text-center mb-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <i class="fas fa-brain feature-icon"></i>
+                        <h5>Ensemble AI Model</h5>
+                        <p>Advanced machine learning ensemble that combines multiple algorithms for accurate skin type detection</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 text-center mb-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <i class="fas fa-heart feature-icon"></i>
+                        <h5>Personalized Recommendations</h5>
+                        <p>Get detailed analysis with customized skincare advice based on your specific skin type</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Info -->
+        <div class="text-center mt-4">
+            <p class="mb-3">✨ <strong>How it works:</strong> Upload your photo → AI analyzes your skin → Get detailed results with skincare recommendations</p>
+            <a href="{{ url_for('about') }}" class="btn btn-outline-primary me-2">
+                <i class="fas fa-info-circle"></i> Learn More
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
