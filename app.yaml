@@ -2,6 +2,7 @@ runtime: python39
 
 env_variables:
   PORT: 8080
+  GCLOUD_STORAGE_BUCKET: "chatapplication-983c8-models"
 
 automatic_scaling:
   min_instances: 0
@@ -13,7 +14,7 @@ resources:
   memory_gb: 4
   disk_size_gb: 20
 
-entrypoint: gunicorn -b :$PORT app:app
+entrypoint: gunicorn -b :$PORT main:app --timeout 900 --workers 1 --worker-class sync
 
 handlers:
 - url: /static

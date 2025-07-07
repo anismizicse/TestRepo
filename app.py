@@ -31,12 +31,11 @@ def load_model_and_mappings():
     global model, label_mappings, transform
     
     try:
-        # List all files in current directory for debugging
-        print("Files in current directory:")
-        for file in os.listdir('.'):
-            if os.path.isfile(file):
-                size = os.path.getsize(file)
-                print(f"  {file}: {size} bytes")
+        # Check if already loaded
+        if model is not None and label_mappings is not None and transform is not None:
+            return True
+            
+        print("Loading model and mappings...")
         
         # Download model files from Cloud Storage if they don't exist locally
         bucket_name = "chatapplication-983c8-models"
@@ -45,6 +44,11 @@ def load_model_and_mappings():
             try:
                 # Use /tmp directory for downloaded files (App Engine writable directory)
                 tmp_path = f"/tmp/{filename}"
+                
+                # Check if file already exists
+                if os.path.exists(tmp_path):
+                    print(f"File {filename} already exists at {tmp_path}")
+                    return tmp_path
                 
                 # Try using Google Cloud Storage client first (better for App Engine)
                 try:
@@ -66,33 +70,24 @@ def load_model_and_mappings():
                 return None
         
         # Try to download files if they don't exist locally
-        label_maps_path = 'label_maps.pkl'
-        model_path = 'best_skin_model.pth'
+        label_maps_path = '/tmp/label_maps.pkl'
+        model_path = '/tmp/best_skin_model.pth'
         
+        # Download label maps if needed
         if not os.path.exists(label_maps_path):
             print("Downloading label_maps.pkl from Cloud Storage...")
             downloaded_path = download_from_gcs('label_maps.pkl')
-            if downloaded_path:
-                label_maps_path = downloaded_path
-            else:
+            if not downloaded_path:
                 return False
+            label_maps_path = downloaded_path
         
+        # Download model if needed
         if not os.path.exists(model_path):
             print("Downloading best_skin_model.pth from Cloud Storage...")
             downloaded_path = download_from_gcs('best_skin_model.pth')
-            if downloaded_path:
-                model_path = downloaded_path
-            else:
+            if not downloaded_path:
                 return False
-        
-        # Check if files exist after download
-        if not os.path.exists(label_maps_path):
-            print(f"Error: label_maps.pkl file not found at {label_maps_path}")
-            return False
-        
-        if not os.path.exists(model_path):
-            print(f"Error: best_skin_model.pth file not found at {model_path}")
-            return False
+            model_path = downloaded_path
         
         print("Loading label mappings...")
         # Load label mappings
@@ -198,18 +193,32 @@ def api_predict():
             return jsonify({'error': 'Invalid file type. Allowed: png, jpg, jpeg, gif, bmp'}), 400
         
         # Load and process image
-        image = Image.open(file.stream)
+        try:
+            image = Image.open(file.stream)
+        except Exception as e:
+            return jsonify({'error': f'Invalid image file: {str(e)}'}), 400
         
-        # Make prediction
-        result = predict_image(image)
-        
-        if 'error' in result:
-            return jsonify(result), 500
-        
-        return jsonify({
-            'success': True,
-            'result': result
-        })
+        # Make prediction with timeout handling
+        try:
+            result = predict_image(image)
+            
+            if 'error' in result:
+                if 'Model not loaded' in result['error']:
+                    return jsonify({
+                        'error': 'Model is loading. Please try again in a few seconds.',
+                        'retry_after': 10
+                    }), 503
+                return jsonify(result), 500
+            
+            return jsonify({
+                'success': True,
+                'result': result
+            })
+        except Exception as pred_error:
+            return jsonify({
+                'error': f'Prediction failed: {str(pred_error)}',
+                'retry_after': 5
+            }), 500
         
     except Exception as e:
         return jsonify({'error': f'Server error: {str(e)}'}), 500
@@ -267,6 +276,40 @@ def health_check():
             'model_loaded': False,
             'version': '1.0.0',
             'error': str(e)
+        }), 500
+
+@app.route('/warmup', methods=['GET', 'POST'])
+def warmup():
+    """Warmup endpoint to pre-load the model"""
+    try:
+        if model is not None and transform is not None and label_mappings is not None:
+            return jsonify({
+                'status': 'success',
+                'message': 'Model already loaded',
+                'model_loaded': True
+            })
+        
+        print("Warmup: Starting model loading...")
+        success = load_model_and_mappings()
+        
+        if success:
+            return jsonify({
+                'status': 'success',
+                'message': 'Model loaded successfully',
+                'model_loaded': True
+            })
+        else:
+            return jsonify({
+                'status': 'error',
+                'message': 'Failed to load model',
+                'model_loaded': False
+            }), 500
+            
+    except Exception as e:
+        return jsonify({
+            'status': 'error',
+            'message': f'Warmup failed: {str(e)}',
+            'model_loaded': False
         }), 500
 
 # Don't load model on startup to avoid App Engine timeout issues
