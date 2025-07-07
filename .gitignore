@@ -8,6 +8,8 @@ build/
 develop-eggs/
 dist/
 downloads/
+.venv/
+venv/
 eggs/
 .eggs/
 lib/

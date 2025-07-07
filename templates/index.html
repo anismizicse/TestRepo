@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skin Type Analyzer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            max-width: 800px;
+            width: 100%;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            color: #333;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 1.1em;
+        }
+
+        .upload-section {
+            border: 3px dashed #667eea;
+            border-radius: 15px;
+            padding: 40px;
+            text-align: center;
+            margin-bottom: 30px;
+            transition: all 0.3s ease;
+            background: #f8f9ff;
+        }
+
+        .upload-section:hover {
+            border-color: #764ba2;
+            background: #f0f2ff;
+        }
+
+        .upload-section.dragover {
+            border-color: #764ba2;
+            background: #e8ebff;
+            transform: scale(1.02);
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .upload-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            margin: 10px;
+        }
+
+        .upload-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .analyze-btn {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+            padding: 15px 40px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.2em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+            width: 100%;
+        }
+
+        .analyze-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(40, 167, 69, 0.3);
+        }
+
+        .analyze-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .preview-section {
+            text-align: center;
+            margin: 30px 0;
+        }
+
+        .preview-image {
+            max-width: 300px;
+            max-height: 300px;
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .result-section {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 30px;
+        }
+
+        .result-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .prediction-result {
+            font-size: 1.5em;
+            font-weight: bold;
+            text-align: center;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .prediction-dry {
+            background: linear-gradient(135deg, #ffeaa7, #fab1a0);
+            color: #d63031;
+        }
+
+        .prediction-oily {
+            background: linear-gradient(135deg, #a8e6cf, #88d8a3);
+            color: #00b894;
+        }
+
+        .confidence-bar {
+            background: #e9ecef;
+            border-radius: 10px;
+            height: 20px;
+            margin: 10px 0;
+            overflow: hidden;
+        }
+
+        .confidence-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            border-radius: 10px;
+            transition: width 0.5s ease;
+        }
+
+        .probabilities {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .prob-card {
+            text-align: center;
+            padding: 15px;
+            border-radius: 10px;
+            background: white;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border: 1px solid #f5c6cb;
+        }
+
+        .success {
+            background: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border: 1px solid #c3e6cb;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .json-display {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            overflow-x: auto;
+            margin-top: 15px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+                margin: 10px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .probabilities {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔬 Skin Type Analyzer</h1>
+            <p>Upload an image to analyze whether the skin type is dry or oily</p>
+        </div>
+
+        {% if error %}
+        <div class="error">
+            <strong>Error:</strong> {{ error }}
+        </div>
+        {% endif %}
+
+        {% if success %}
+        <div class="success">
+            <strong>Success:</strong> Image analyzed successfully!
+        </div>
+        {% endif %}
+
+        <form id="uploadForm" method="post" enctype="multipart/form-data" action="/predict">
+            <div class="upload-section" id="uploadSection">
+                <div id="dropText">
+                    <h3>📸 Choose or Drop an Image</h3>
+                    <p>Drag and drop an image here, or click to select</p>
+                    <button type="button" class="upload-btn" onclick="document.getElementById('imageInput').click()">
+                        Select Image
+                    </button>
+                    <input type="file" id="imageInput" name="image" class="file-input" accept="image/*" required>
+                </div>
+            </div>
+
+            <div class="preview-section" id="previewSection" style="display: none;">
+                <img id="previewImage" class="preview-image" alt="Preview">
+                <br>
+                <button type="submit" class="analyze-btn" id="analyzeBtn">
+                    🔍 Analyze Skin Type
+                </button>
+            </div>
+        </form>
+
+        <div class="loading" id="loadingSection">
+            <div class="spinner"></div>
+            <p>Analyzing image... Please wait</p>
+        </div>
+
+        {% if result %}
+        <div class="result-section">
+            <h2>📊 Analysis Results</h2>
+            
+            <div class="prediction-result prediction-{{ result.prediction }}">
+                Predicted Skin Type: <span style="text-transform: uppercase;">{{ result.prediction }}</span>
+            </div>
+            
+            <div class="result-card">
+                <h4>Confidence Level</h4>
+                <div class="confidence-bar">
+                    <div class="confidence-fill" style="width: {{ (result.confidence * 100)|round(1) }}%"></div>
+                </div>
+                <p style="text-align: center; margin-top: 10px;">
+                    {{ (result.confidence * 100)|round(1) }}% confident
+                </p>
+            </div>
+            
+            <div class="probabilities">
+                <div class="prob-card">
+                    <h4>🏜️ Dry Skin</h4>
+                    <h3>{{ (result.probabilities.dry * 100)|round(1) }}%</h3>
+                </div>
+                <div class="prob-card">
+                    <h4>💧 Oily Skin</h4>
+                    <h3>{{ (result.probabilities.oily * 100)|round(1) }}%</h3>
+                </div>
+            </div>
+
+            <div class="result-card">
+                <h4>📋 JSON Response</h4>
+                <div class="json-display">{{ result | tojson(indent=2) }}</div>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if image_data %}
+        <div class="preview-section">
+            <h3>📸 Analyzed Image</h3>
+            <img src="data:image/png;base64,{{ image_data }}" class="preview-image" alt="Analyzed Image">
+        </div>
+        {% endif %}
+    </div>
+
+    <script>
+        const imageInput = document.getElementById('imageInput');
+        const previewSection = document.getElementById('previewSection');
+        const previewImage = document.getElementById('previewImage');
+        const uploadSection = document.getElementById('uploadSection');
+        const uploadForm = document.getElementById('uploadForm');
+        const loadingSection = document.getElementById('loadingSection');
+
+        // File input change handler
+        imageInput.addEventListener('change', function(e) {
+            if (e.target.files && e.target.files[0]) {
+                displayPreview(e.target.files[0]);
+            }
+        });
+
+        // Drag and drop functionality
+        uploadSection.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            uploadSection.classList.add('dragover');
+        });
+
+        uploadSection.addEventListener('dragleave', function(e) {
+            e.preventDefault();
+            uploadSection.classList.remove('dragover');
+        });
+
+        uploadSection.addEventListener('drop', function(e) {
+            e.preventDefault();
+            uploadSection.classList.remove('dragover');
+            
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                imageInput.files = files;
+                displayPreview(files[0]);
+            }
+        });
+
+        // Click to upload
+        uploadSection.addEventListener('click', function() {
+            imageInput.click();
+        });
+
+        // Form submission handler
+        uploadForm.addEventListener('submit', function() {
+            loadingSection.style.display = 'block';
+        });
+
+        function displayPreview(file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                previewImage.src = e.target.result;
+                previewSection.style.display = 'block';
+                uploadSection.style.display = 'none';
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // Reset functionality
+        function resetUpload() {
+            imageInput.value = '';
+            previewSection.style.display = 'none';
+            uploadSection.style.display = 'block';
+        }
+    </script>
+</body>
+</html>
