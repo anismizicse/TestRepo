@@ -9,6 +9,8 @@ import torchvision.transforms as transforms
 from torchvision.models import resnet50
 import io
 import base64
+import urllib.request
+from google.cloud import storage
 
 app = Flask(__name__)
 
@@ -29,17 +31,86 @@ def load_model_and_mappings():
     global model, label_mappings, transform
     
     try:
-        # Load label mappings
-        with open('label_maps.pkl', 'rb') as f:
-            label_mappings = pickle.load(f)
+        # List all files in current directory for debugging
+        print("Files in current directory:")
+        for file in os.listdir('.'):
+            if os.path.isfile(file):
+                size = os.path.getsize(file)
+                print(f"  {file}: {size} bytes")
         
+        # Download model files from Cloud Storage if they don't exist locally
+        bucket_name = "chatapplication-983c8-models"
+        
+        def download_from_gcs(filename):
+            try:
+                # Use /tmp directory for downloaded files (App Engine writable directory)
+                tmp_path = f"/tmp/{filename}"
+                
+                # Try using Google Cloud Storage client first (better for App Engine)
+                try:
+                    client = storage.Client()
+                    bucket = client.bucket(bucket_name)
+                    blob = bucket.blob(filename)
+                    blob.download_to_filename(tmp_path)
+                    print(f"Successfully downloaded {filename} using GCS client to {tmp_path}")
+                    return tmp_path
+                except Exception as gcs_error:
+                    print(f"GCS client failed for {filename}: {gcs_error}, trying HTTP...")
+                    # Fallback to HTTP download
+                    url = f"https://storage.googleapis.com/{bucket_name}/{filename}"
+                    urllib.request.urlretrieve(url, tmp_path)
+                    print(f"Successfully downloaded {filename} using HTTP to {tmp_path}")
+                    return tmp_path
+            except Exception as e:
+                print(f"Failed to download {filename}: {e}")
+                return None
+        
+        # Try to download files if they don't exist locally
+        label_maps_path = 'label_maps.pkl'
+        model_path = 'best_skin_model.pth'
+        
+        if not os.path.exists(label_maps_path):
+            print("Downloading label_maps.pkl from Cloud Storage...")
+            downloaded_path = download_from_gcs('label_maps.pkl')
+            if downloaded_path:
+                label_maps_path = downloaded_path
+            else:
+                return False
+        
+        if not os.path.exists(model_path):
+            print("Downloading best_skin_model.pth from Cloud Storage...")
+            downloaded_path = download_from_gcs('best_skin_model.pth')
+            if downloaded_path:
+                model_path = downloaded_path
+            else:
+                return False
+        
+        # Check if files exist after download
+        if not os.path.exists(label_maps_path):
+            print(f"Error: label_maps.pkl file not found at {label_maps_path}")
+            return False
+        
+        if not os.path.exists(model_path):
+            print(f"Error: best_skin_model.pth file not found at {model_path}")
+            return False
+        
+        print("Loading label mappings...")
+        # Load label mappings
+        with open(label_maps_path, 'rb') as f:
+            label_mappings = pickle.load(f)
+        print(f"Label mappings loaded: {label_mappings}")
+        
+        print("Initializing model architecture...")
         # Initialize model architecture (ResNet50 with 2 output classes)
         model = resnet50(weights=None)  # Don't load pre-trained weights
         model.fc = nn.Linear(model.fc.in_features, 2)  # 2 classes: dry, oily
         
+        print("Loading trained model weights...")
         # Load trained model weights
         device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-        model.load_state_dict(torch.load('best_skin_model.pth', map_location=device))
+        print(f"Using device: {device}")
+        
+        model.load_state_dict(torch.load(model_path, map_location=device))
         model.to(device)
         model.eval()
         
@@ -55,13 +126,20 @@ def load_model_and_mappings():
         
     except Exception as e:
         print(f"Error loading model: {str(e)}")
+        import traceback
+        traceback.print_exc()
         return False
 
 def predict_image(image):
     """Predict skin type from image"""
+    global model, transform
+    
     try:
+        # Auto-load model if not loaded
         if model is None or transform is None:
-            return {"error": "Model not loaded"}
+            print("Model not loaded, attempting to load...")
+            if not load_model_and_mappings():
+                return {"error": "Model not loaded. Failed to load the trained model files."}
         
         # Preprocess image
         if image.mode != 'RGB':
@@ -176,16 +254,25 @@ def web_predict():
 @app.route('/health')
 def health_check():
     """Health check endpoint"""
-    return jsonify({
-        'status': 'healthy',
-        'model_loaded': model is not None,
-        'version': '1.0.0'
-    })
+    try:
+        return jsonify({
+            'status': 'healthy',
+            'model_loaded': model is not None and transform is not None and label_mappings is not None,
+            'version': '1.0.0',
+            'message': 'Model loads lazily on first prediction request' if model is None else 'Model ready'
+        })
+    except Exception as e:
+        return jsonify({
+            'status': 'error',
+            'model_loaded': False,
+            'version': '1.0.0',
+            'error': str(e)
+        }), 500
+
+# Don't load model on startup to avoid App Engine timeout issues
+# Model will be loaded lazily on first prediction request
+print("App initialized. Model will be loaded on first prediction request.")
 
 if __name__ == '__main__':
-    # Load model on startup
-    if load_model_and_mappings():
-        print("Starting Flask app...")
-        app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 8080)), debug=False)
-    else:
-        print("Failed to load model. Exiting.")
+    print("Starting Flask app...")
+    app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 8080)), debug=False)

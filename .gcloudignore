@@ -48,6 +48,10 @@ env/
 
 # Dataset folders (if any)
 Oily-Dry-Skin-Types/
+
+# Model files (too large for deployment, will be downloaded from Cloud Storage)
+# Keep label_maps.pkl as it's small (77 bytes)
+*.pth
 uploads/
 
 # IDE
