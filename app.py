@@ -13,11 +13,7 @@ import base64
 app = Flask(__name__)
 
 # Configuration
-UPLOAD_FOLDER = 'uploads'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'bmp'}
-
-# Create upload folder if it doesn't exist
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 # Global variables for model and label mappings
 model = None
