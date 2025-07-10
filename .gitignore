@@ -14,8 +14,6 @@ client_secrets.json
 
 # Dataset (too large for git)
 Oily-Dry-Skin-Types/
-skin-type-classifier/
-skin-type-api/
 
 # Jupyter Notebook checkpoints
 .ipynb_checkpoints/
