@@ -1,0 +1,239 @@
+{
+  "info": {
+    "_postman_id": "quarkus-users-api",
+    "name": "Quarkus Users API",
+    "description": "Complete CRUD API collection for Quarkus MongoDB Users Management",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Create User",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"firstName\": \"John\",\n  \"lastName\": \"Doe\",\n  \"email\": \"john.doe@example.com\",\n  \"phoneNumber\": \"+1-555-0123\",\n  \"city\": \"New York\",\n  \"age\": 28\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/users",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["api", "users"]
+        },
+        "description": "Create a new user in the database"
+      },
+      "response": []
+    },
+    {
+      "name": "Create User - Alice",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"firstName\": \"Alice\",\n  \"lastName\": \"Johnson\",\n  \"email\": \"alice.johnson@example.com\",\n  \"phoneNumber\": \"+1-555-0456\",\n  \"city\": \"Los Angeles\",\n  \"age\": 25\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/users",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["api", "users"]
+        },
+        "description": "Create another sample user - Alice"
+      },
+      "response": []
+    },
+    {
+      "name": "Create User - Bob",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"firstName\": \"Bob\",\n  \"lastName\": \"Smith\",\n  \"email\": \"bob.smith@example.com\",\n  \"phoneNumber\": \"+1-555-0789\",\n  \"city\": \"Chicago\",\n  \"age\": 32\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/users",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["api", "users"]
+        },
+        "description": "Create another sample user - Bob"
+      },
+      "response": []
+    },
+    {
+      "name": "Create User - Sarah",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"firstName\": \"Sarah\",\n  \"lastName\": \"Williams\",\n  \"email\": \"sarah.williams@example.com\",\n  \"phoneNumber\": \"+1-555-1234\",\n  \"city\": \"Boston\",\n  \"age\": 27\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/users",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["api", "users"]
+        },
+        "description": "Create another sample user - Sarah"
+      },
+      "response": []
+    },
+    {
+      "name": "Get All Users",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/api/users",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["api", "users"]
+        },
+        "description": "Retrieve all users from the database"
+      },
+      "response": []
+    },
+    {
+      "name": "Get User by ID",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/api/users/{{user_id}}",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["api", "users", "{{user_id}}"]
+        },
+        "description": "Get a specific user by their MongoDB ObjectId. Replace {{user_id}} with actual user ID from response"
+      },
+      "response": []
+    },
+    {
+      "name": "Update User",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"firstName\": \"John\",\n  \"lastName\": \"Smith\",\n  \"email\": \"john.smith@example.com\",\n  \"phoneNumber\": \"+1-555-9999\",\n  \"city\": \"San Francisco\",\n  \"age\": 29\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8080/api/users/{{user_id}}",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["api", "users", "{{user_id}}"]
+        },
+        "description": "Update an existing user. Replace {{user_id}} with actual user ID"
+      },
+      "response": []
+    },
+    {
+      "name": "Delete User",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/api/users/{{user_id}}",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["api", "users", "{{user_id}}"]
+        },
+        "description": "Delete a user by their ID. Replace {{user_id}} with actual user ID"
+      },
+      "response": []
+    },
+    {
+      "name": "Search Users by City",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/api/users/search/city?city=NewYork",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["api", "users", "search", "city"],
+          "query": [
+            {
+              "key": "city",
+              "value": "NewYork"
+            }
+          ]
+        },
+        "description": "Search for users in a specific city. Modify city parameter as needed"
+      },
+      "response": []
+    },
+    {
+      "name": "Search Users by Age Range",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8080/api/users/search/age?minAge=25&maxAge=30",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["api", "users", "search", "age"],
+          "query": [
+            {
+              "key": "minAge",
+              "value": "25"
+            },
+            {
+              "key": "maxAge",
+              "value": "30"
+            }
+          ]
+        },
+        "description": "Search for users within an age range. Modify minAge and maxAge as needed"
+      },
+      "response": []
+    }
+  ],
+  "variable": [
+    {
+      "key": "user_id",
+      "value": "",
+      "type": "string",
+      "description": "MongoDB ObjectId of a user - Get this from Get All Users response"
+    }
+  ]
+}
