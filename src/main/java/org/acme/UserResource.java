@@ -1,11 +1,14 @@
 package org.acme;
 
 import jakarta.inject.Inject;
+import jakarta.validation.Valid;
+import jakarta.validation.ConstraintViolationException;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Path("/api/users")
 @Produces(MediaType.APPLICATION_JSON)
@@ -20,7 +23,7 @@ public class UserResource {
      * POST /api/users
      */
     @POST
-    public Response createUser(User user) {
+    public Response createUser(@Valid User user) {
         User createdUser = userService.createUser(user);
         return Response.status(Response.Status.CREATED).entity(createdUser).build();
     }
@@ -64,7 +67,7 @@ public class UserResource {
      */
     @PUT
     @Path("/{id}")
-    public Response updateUser(@PathParam("id") String id, User user) {
+    public Response updateUser(@PathParam("id") String id, @Valid User user) {
         try {
             User updatedUser = userService.updateUser(id, user);
             if (updatedUser != null) {

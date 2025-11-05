@@ -1,14 +1,39 @@
 package org.acme;
 
 import io.quarkus.mongodb.panache.PanacheMongoEntity;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.Pattern;
 
 public class User extends PanacheMongoEntity {
     
+    @NotBlank(message = "First name is required and cannot be empty")
+    @Size(min = 1, max = 50, message = "First name must be between 1 and 50 characters")
     public String firstName;
+    
+    @NotBlank(message = "Last name is required and cannot be empty")
+    @Size(min = 1, max = 50, message = "Last name must be between 1 and 50 characters")
     public String lastName;
+    
+    @NotBlank(message = "Email is required and cannot be empty")
+    @Email(message = "Email must be a valid email address")
     public String email;
+    
+    @NotBlank(message = "Phone number is required and cannot be empty")
+    @Pattern(regexp = "^[+]?[0-9\\-\\s\\(\\)]{8,20}$", message = "Phone number must be valid (8-20 characters, can include +, -, (), spaces)")
     public String phoneNumber;
+    
+    @NotBlank(message = "City is required and cannot be empty")
+    @Size(min = 1, max = 50, message = "City must be between 1 and 50 characters")
     public String city;
+    
+    @NotNull(message = "Age is required")
+    @Min(value = 0, message = "Age must be 0 or greater")
+    @Max(value = 150, message = "Age must be 150 or less")
     public int age;
 
     // Default constructor
